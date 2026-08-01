@@ -1,0 +1,7 @@
+{
+  "buildCommand": "mkdir -p public && cp -R web/* public/",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

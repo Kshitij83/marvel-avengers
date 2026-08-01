@@ -400,6 +400,77 @@ def extract_suggestion(reply, roster):
     return "\n".join(kept).strip(), suggestion
 
 
+def process_chat(body, get_header):
+    roster = load_characters()
+    if roster is None:
+        return 500, {"error": "Character data unavailable"}
+    character_id = body.get("characterId")
+    character = roster.get(str(character_id)) if character_id is not None else None
+    if character is None:
+        return 404, {"error": f"Unknown characterId: {character_id}"}
+    messages = body.get("messages") or []
+    filtered = []
+    for m in messages:
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant"):
+            filtered.append({"role": m["role"], "content": m.get("content", "")})
+    while filtered and filtered[-1]["role"] != "user":
+        filtered.pop()
+    if not filtered:
+        filtered = [{"role": "user", "content": ""}]
+
+    explicit_provider = (body.get("provider") or get_header("x-provider") or "").strip().lower()
+    explicit_key = (body.get("apiKey") or get_header("x-api-key") or "").strip()
+    if explicit_provider not in PROVIDERS:
+        explicit_provider = ""
+    if explicit_provider:
+        provider = explicit_provider
+    else:
+        provider = detect_provider(explicit_key) or "ollama"
+
+    if provider == "ollama":
+        ollama_model = pick_ollama_model()
+        if ollama_model is None:
+            return 503, {
+                "reply": "",
+                "error": "NO_MODEL",
+                "provider": "ollama",
+                "message": (
+                    "No local AI model found. Install Ollama and run "
+                    "`ollama pull llama3.2:1b`, or paste an API key in "
+                    "the ⚙ Settings."
+                ),
+            }
+    else:
+        api_key = explicit_key or os.environ.get(PROVIDERS[provider]["env"]) or ""
+        if not api_key:
+            return 400, {
+                "reply": "",
+                "error": "NO_KEY",
+                "provider": provider,
+                "message": (
+                    f"No {provider} API key configured. Paste one in the "
+                    "⚙ Settings (free tiers: Google AI Studio for Gemini, "
+                    "OpenAI, Anthropic) or run Ollama for a 100% free "
+                    "local option."
+                ),
+            }
+
+    system = build_system_prompt(character, roster)
+    if provider == "ollama":
+        result = call_ollama(ollama_model, system, filtered)
+    else:
+        result = provider_call(provider, api_key, system, filtered)
+    if isinstance(result, tuple):
+        text, err = result
+        if err is None:
+            result = text
+        else:
+            status, msg = err
+            return 502, {"reply": "An error occurred...", "error": f"status={status} {msg}"}
+    reply, suggestion = extract_suggestion(result, roster)
+    return 200, {"reply": reply, "suggestedCharacterId": suggestion}
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "MarvelAvengersServer/1.0"
 
@@ -450,9 +521,6 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def handle_chat(self):
-        roster = load_characters()
-        if roster is None:
-            return self.json_response({"error": "Character data unavailable"}, 500)
         try:
             length = int(self.headers.get("Content-Length") or 0)
         except ValueError:
@@ -464,80 +532,8 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(raw)
         except Exception:
             return self.json_response({"error": "Invalid JSON body"}, 400)
-        character_id = body.get("characterId")
-        character = roster.get(str(character_id)) if character_id is not None else None
-        if character is None:
-            return self.json_response({"error": f"Unknown characterId: {character_id}"}, 404)
-        messages = body.get("messages") or []
-        filtered = []
-        for m in messages:
-            if isinstance(m, dict) and m.get("role") in ("user", "assistant"):
-                filtered.append({"role": m["role"], "content": m.get("content", "")})
-        while filtered and filtered[-1]["role"] != "user":
-            filtered.pop()
-        if not filtered:
-            filtered = [{"role": "user", "content": ""}]
-
-        explicit_provider = (body.get("provider") or self.headers.get("x-provider") or "").strip().lower()
-        explicit_key = (body.get("apiKey") or self.headers.get("x-api-key") or "").strip()
-        if explicit_provider not in PROVIDERS:
-            explicit_provider = ""
-        if explicit_provider:
-            provider = explicit_provider
-        else:
-            provider = detect_provider(explicit_key) or "ollama"
-
-        if provider == "ollama":
-            ollama_model = pick_ollama_model()
-            if ollama_model is None:
-                return self.json_response(
-                    {
-                        "reply": "",
-                        "error": "NO_MODEL",
-                        "provider": "ollama",
-                        "message": (
-                            "No local AI model found. Install Ollama and run "
-                            "`ollama pull llama3.2:1b`, or paste an API key in "
-                            "the ⚙ Settings."
-                        ),
-                    },
-                    503,
-                )
-        else:
-            api_key = explicit_key or os.environ.get(PROVIDERS[provider]["env"]) or ""
-            if not api_key:
-                return self.json_response(
-                    {
-                        "reply": "",
-                        "error": "NO_KEY",
-                        "provider": provider,
-                        "message": (
-                            f"No {provider} API key configured. Paste one in the "
-                            "⚙ Settings (free tiers: Google AI Studio for Gemini, "
-                            "OpenAI, Anthropic) or run Ollama for a 100% free "
-                            "local option."
-                        ),
-                    },
-                    400,
-                )
-
-        system = build_system_prompt(character, roster)
-        if provider == "ollama":
-            result = call_ollama(ollama_model, system, filtered)
-        else:
-            result = provider_call(provider, api_key, system, filtered)
-        if isinstance(result, tuple):
-            text, err = result
-            if err is None:
-                result = text
-            else:
-                status, msg = err
-                return self.json_response(
-                    {"reply": "An error occurred...", "error": f"status={status} {msg}"},
-                    502,
-                )
-        reply, suggestion = extract_suggestion(result, roster)
-        self.json_response({"reply": reply, "suggestedCharacterId": suggestion})
+        status, payload = process_chat(body, self.headers.get)
+        self.json_response(payload, status)
 
     def handle_config(self):
         env_keys = {}
