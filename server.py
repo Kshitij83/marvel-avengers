@@ -447,7 +447,8 @@ def process_chat(body, get_header):
                         "the ⚙ Settings."
                     ),
                 }
-    else:
+
+    if provider != "ollama":
         api_key = explicit_key or os.environ.get(PROVIDERS[provider]["env"]) or ""
         if not api_key:
             return 400, {
