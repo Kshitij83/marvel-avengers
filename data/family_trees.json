@@ -1,0 +1,73 @@
+{
+  "trees": [
+    {
+      "id": "thor-asgard",
+      "title": "Thor's Asgardian Family Tree",
+      "subtitle": "The Royal House of Odin",
+      "nodes": [
+        { "id": "odin", "name": "Odin", "title": "Allfather, King of Asgard", "color": "#ffb300", "emoji": "👁️", "relation": "Patriarch" },
+        { "id": "frigga", "name": "Frigga", "title": "Queen of Asgard", "color": "#e91e63", "emoji": "👸", "relation": "Matriarch" },
+        { "id": "bor", "name": "Bor", "title": "Former King of Asgard", "color": "#8d6e63", "emoji": "🏰", "relation": "Grandfather" },
+        { "id": "bestla", "name": "Bestla", "title": "Wife of Bor", "color": "#7b1fa2", "emoji": "👵", "relation": "Grandmother" },
+        { "id": "thor", "name": "Thor", "title": "God of Thunder", "color": "#00bcd4", "emoji": "🔨", "relation": "Son" },
+        { "id": "loki", "name": "Loki", "title": "God of Mischief", "color": "#4caf50", "emoji": "🐍", "relation": "Adopted Son" },
+        { "id": "hela", "name": "Hela", "title": "Goddess of Death", "color": "#37474f", "emoji": "💀", "relation": "Daughter" },
+        { "id": "jane", "name": "Jane Foster", "title": "Astrophysicist & Mighty Thor", "color": "#ff7043", "emoji": "⚡", "relation": "Partner of Thor" }
+      ],
+      "edges": [
+        { "from": "bor", "to": "bestla", "relation": "husband" },
+        { "from": "bestla", "to": "bor", "relation": "wife" },
+        { "from": "bor", "to": "odin", "relation": "father" },
+        { "from": "odin", "to": "bor", "relation": "son" },
+        { "from": "bestla", "to": "odin", "relation": "mother" },
+        { "from": "odin", "to": "bestla", "relation": "son" },
+        { "from": "odin", "to": "frigga", "relation": "husband" },
+        { "from": "frigga", "to": "odin", "relation": "wife" },
+        { "from": "odin", "to": "thor", "relation": "father" },
+        { "from": "thor", "to": "odin", "relation": "son" },
+        { "from": "frigga", "to": "thor", "relation": "mother" },
+        { "from": "thor", "to": "frigga", "relation": "son" },
+        { "from": "odin", "to": "thor", "relation": "bequeathed Mjolnir" },
+        { "from": "odin", "to": "loki", "relation": "adopted father" },
+        { "from": "loki", "to": "odin", "relation": "adopted son" },
+        { "from": "frigga", "to": "loki", "relation": "adopted mother" },
+        { "from": "loki", "to": "frigga", "relation": "adopted son" },
+        { "from": "thor", "to": "loki", "relation": "brother" },
+        { "from": "loki", "to": "thor", "relation": "adoptive brother" },
+        { "from": "odin", "to": "hela", "relation": "father" },
+        { "from": "hela", "to": "odin", "relation": "daughter" },
+        { "from": "thor", "to": "hela", "relation": "sister" },
+        { "from": "jane", "to": "thor", "relation": "partner" }
+      ]
+    },
+    {
+      "id": "stark-family",
+      "title": "Stark Family Tree",
+      "subtitle": "The House of Stark & the Iron Legacy",
+      "nodes": [
+        { "id": "howard", "name": "Howard Stark", "title": "Founder of Stark Industries", "color": "#1565c0", "emoji": "👔", "relation": "Father" },
+        { "id": "maria", "name": "Maria Stark", "title": "Matriarch of the Stark Family", "color": "#e91e63", "emoji": "💐", "relation": "Mother" },
+        { "id": "tony", "name": "Tony Stark", "title": "Iron Man", "color": "#c62828", "emoji": "🤖", "relation": "Son" },
+        { "id": "pepper", "name": "Pepper Potts", "title": "CEO of Stark Industries / Rescue", "color": "#ff7043", "emoji": "👩‍💼", "relation": "Wife" },
+        { "id": "morgan", "name": "Morgan Stark", "title": "Daughter of Tony & Pepper", "color": "#ec407a", "emoji": "👧", "relation": "Daughter" },
+        { "id": "peter", "name": "Peter Parker", "title": "Spider-Man", "color": "#d93025", "emoji": "🕷️", "relation": "Mentee" }
+      ],
+      "edges": [
+        { "from": "howard", "to": "maria", "relation": "husband" },
+        { "from": "maria", "to": "howard", "relation": "wife" },
+        { "from": "howard", "to": "tony", "relation": "father" },
+        { "from": "tony", "to": "howard", "relation": "son" },
+        { "from": "maria", "to": "tony", "relation": "mother" },
+        { "from": "tony", "to": "maria", "relation": "son" },
+        { "from": "tony", "to": "pepper", "relation": "husband" },
+        { "from": "pepper", "to": "tony", "relation": "wife" },
+        { "from": "tony", "to": "morgan", "relation": "father" },
+        { "from": "morgan", "to": "tony", "relation": "daughter" },
+        { "from": "pepper", "to": "morgan", "relation": "mother" },
+        { "from": "morgan", "to": "pepper", "relation": "daughter" },
+        { "from": "tony", "to": "peter", "relation": "mentor" },
+        { "from": "peter", "to": "tony", "relation": "mentee" }
+      ]
+    }
+  ]
+}

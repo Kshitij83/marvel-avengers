@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>MARVEL AVENGERS — Assemble</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div id="splash" class="splash">
+  <div class="splash-rays"></div>
+  <h1 class="splash-title" id="splash-title"></h1>
+  <div class="splash-sub">EARTH'S MIGHTIEST HEROES</div>
+</div>
+
+<canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
+
+<nav class="topnav" id="topnav">
+  <a class="nav-logo" href="#characters">AVENGERS<span>EARTH'S MIGHTIEST</span></a>
+  <div class="nav-links">
+    <a href="#characters" class="nav-link active">CHARACTERS</a>
+    <a href="#timeline" class="nav-link">TIMELINE</a>
+    <a href="#family" class="nav-link">FAMILY</a>
+    <a href="#vs" class="nav-link">VS BATTLE</a>
+    <a href="#chat" class="nav-link">CHATBOT</a>
+  </div>
+</nav>
+
+<main>
+
+<section id="characters" class="section">
+  <div class="hero">
+    <div class="hero-burst" id="hero-burst"></div>
+    <h1 class="hero-title">
+      <span class="hero-line">MARVEL</span>
+      <span class="hero-line">AVENGERS</span>
+    </h1>
+    <p class="hero-sub">Earth's mightiest heroes. Choose your champion and hit ASSEMBLE.</p>
+    <button class="comic-btn hero-btn" id="assemble-btn">ASSEMBLE</button>
+    <div class="hero-scroll">▼ SCROLL TO EXPLORE ▼</div>
+  </div>
+  <div class="char-grid" id="char-grid"></div>
+</section>
+
+<section id="timeline" class="section">
+  <header class="section-head">
+    <h2>TIMELINE</h2>
+    <p>Every MCU movie in chronological order.</p>
+  </header>
+  <div class="tl-wrap">
+    <div class="tl-scroll" id="tl-scroll">
+      <div class="tl-track" id="tl-track"></div>
+    </div>
+    <div class="tl-hint">⇠ scroll / drag ⇢</div>
+  </div>
+</section>
+
+<section id="family" class="section">
+  <header class="section-head">
+    <h2>FAMILY TREES</h2>
+    <p>Lineage, legacy and love across the cosmos.</p>
+  </header>
+  <div class="tree-tabs" id="tree-tabs"></div>
+  <div class="tree-stage" id="tree-stage"></div>
+</section>
+
+<section id="vs" class="section">
+  <header class="section-head">
+    <h2>VS BATTLE</h2>
+    <p>Two heroes enter. One gets the comic-book cover.</p>
+  </header>
+  <div class="vs-panel">
+    <div class="vs-pick">
+      <select id="vs-a" class="vs-select"></select>
+      <span class="vs-vs">VS</span>
+      <select id="vs-b" class="vs-select"></select>
+      <button class="comic-btn vs-fight-btn" id="vs-fight">FIGHT!</button>
+    </div>
+    <div class="vs-stage" id="vs-stage">
+      <div class="vs-idle">Pick your fighters and press FIGHT.</div>
+    </div>
+  </div>
+</section>
+
+<section id="chat" class="section">
+  <header class="section-head">
+    <h2>CHATBOT</h2>
+    <p>Talk to a hero. They talk back.</p>
+  </header>
+  <div class="chat-layout" id="chat-layout">
+    <div class="chat-pick" id="chat-pick"></div>
+    <div class="chat-window">
+      <div class="chat-head" id="chat-head">
+        <button class="chat-settings-btn" id="chat-settings-btn" title="AI settings" onclick="Chat.openSettings()">⚙</button>
+      </div>
+      <div class="chat-body" id="chat-body"></div>
+      <div class="chat-input-wrap">
+        <input id="chat-input" type="text" maxlength="500" autocomplete="off" placeholder="Ask your hero something...">
+        <button class="comic-btn chat-send" id="chat-send">SEND</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="settings-modal" hidden>
+  <div class="modal-backdrop" id="settings-backdrop"></div>
+  <div class="settings-panel" id="settings-panel">
+    <h3>⚙ AI Settings</h3>
+    <p class="settings-sub">Free by default via local Ollama. Paste an API key to use a cloud model.</p>
+    <label for="set-provider">Provider</label>
+    <select id="set-provider">
+      <option value="auto">Auto (detect from key)</option>
+      <option value="ollama">Ollama (free, local)</option>
+      <option value="anthropic">Anthropic Claude</option>
+      <option value="gemini">Google Gemini</option>
+      <option value="openai">OpenAI</option>
+    </select>
+    <label for="set-key">API key (optional — saved only in your browser)</label>
+    <input id="set-key" type="password" placeholder="sk-ant-... / AIza... / sk-..." autocomplete="off">
+    <div class="settings-status" id="settings-status"></div>
+    <div class="settings-actions">
+      <button class="comic-btn" onclick="Chat.saveSettings()">SAVE</button>
+      <button class="comic-btn ghost" onclick="Chat.closeSettings()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-ticker"><span>EXCELSIOR!</span><span>AVENGERS ASSEMBLE</span><span>WAKANDA FOREVER</span><span>I AM GROOT</span><span>HULK SMASH</span><span>EXCELSIOR!</span><span>AVENGERS ASSEMBLE</span><span>WAKANDA FOREVER</span><span>I AM GROOT</span><span>HULK SMASH</span></div>
+  <div class="footer-inner">
+    <span class="footer-logo">MARVEL AVENGERS</span>
+    <span>An unofficial fan tribute — built with pure HTML / CSS / JS. Not affiliated with Marvel Entertainment.</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-panel" id="modal-panel"></div>
+</div>
+
+<div class="special" id="special" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="/js/data.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/characters.js"></script>
+<script src="/js/timeline.js"></script>
+<script src="/js/family.js"></script>
+<script src="/js/chat.js"></script>
+<script src="/js/vs.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () { App.init(); });
+</script>
+</body>
+</html>

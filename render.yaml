@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: marvel-avengers
+    runtime: python
+    plan: free
+    buildCommand: ""
+    startCommand: python server.py --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.6
