@@ -28,7 +28,7 @@ PROVIDERS = {
     },
     "gemini": {
         "env": "GEMINI_API_KEY",
-        "models": ["gemini-2.5-flash", "gemini-2.0-flash"],
+        "models": ["gemini-3.5-flash", "gemini-2.5-pro"],
     },
     "openai": {
         "env": "OPENAI_API_KEY",
@@ -430,16 +430,23 @@ def process_chat(body, get_header):
     if provider == "ollama":
         ollama_model = pick_ollama_model()
         if ollama_model is None:
-            return 503, {
-                "reply": "",
-                "error": "NO_MODEL",
-                "provider": "ollama",
-                "message": (
-                    "No local AI model found. Install Ollama and run "
-                    "`ollama pull llama3.2:1b`, or paste an API key in "
-                    "the ⚙ Settings."
-                ),
-            }
+            fallback = next(
+                (p for p, c in PROVIDERS.items() if os.environ.get(c["env"])),
+                None,
+            )
+            if fallback:
+                provider = fallback
+            else:
+                return 503, {
+                    "reply": "",
+                    "error": "NO_MODEL",
+                    "provider": "ollama",
+                    "message": (
+                        "No local AI model found. Install Ollama and run "
+                        "`ollama pull llama3.2:1b`, or paste an API key in "
+                        "the ⚙ Settings."
+                    ),
+                }
     else:
         api_key = explicit_key or os.environ.get(PROVIDERS[provider]["env"]) or ""
         if not api_key:
